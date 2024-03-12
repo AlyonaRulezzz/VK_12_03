@@ -69,7 +69,7 @@ class ProductListViewModel @Inject constructor(
                 is Resource.Success -> {
                     endReached.value = curPage * PAGE_SIZE >= result.data!!.total
                     val productEntries = result.data.products.mapIndexed { _, entry ->
-                        ProductListEntry(entry.title, entry.thumbnail, entry.description)
+                        ProductListEntry(entry.title, entry.thumbnail, entry.id, entry.description)
                     }
                     curPage++
 

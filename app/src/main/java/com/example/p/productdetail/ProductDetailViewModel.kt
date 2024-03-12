@@ -11,7 +11,7 @@ import javax.inject.Inject
 class ProductDetailViewModel @Inject constructor(
     private val repository: ProductRepository
 ) : ViewModel() {
-//    suspend fun getPokemonInfo(pokemonName: String): Resource<Product> {
-//        return repository.getPokemonInfo(pokemonName)
-//    }
+    suspend fun getProductInfo(id: String): Resource<Product> {
+        return repository.getProductInfo(id)
+    }
 }

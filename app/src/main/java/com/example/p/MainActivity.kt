@@ -16,7 +16,6 @@ import com.example.p.ui.theme.PTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 import com.example.p.productdetail.ProductDetailScreen
-import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -30,12 +29,12 @@ class MainActivity : ComponentActivity() {
                         ProductListScreen(navController = navController)
                     }
                     composable(
-                        "product_detail_screen/{dominantColor}/{productName}",
+                        "product_detail_screen/{dominantColor}/{productId}",
                         arguments = listOf(
                             navArgument("dominantColor") {
                                 type = NavType.IntType
                             },
-                            navArgument("productName") {
+                            navArgument("productId") {
                                 type = NavType.StringType
                             }
                         )
@@ -44,12 +43,12 @@ class MainActivity : ComponentActivity() {
                             val color = it.arguments?.getInt("dominantColor")
                             color?.let { Color(it) } ?: Color.White
                         }
-                        val productName = remember {
-                            it.arguments?.getString("productName")
+                        val productId = remember {
+                            it.arguments?.getString("productId")
                         }
                         ProductDetailScreen(
                             dominantColor = dominantColor,
-                            productName = productName?.lowercase(Locale.ROOT) ?: "",
+                            productId = productId ?: "",
                             navController = navController
                         )
                     }

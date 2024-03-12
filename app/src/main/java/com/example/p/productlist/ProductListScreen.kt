@@ -216,7 +216,7 @@ fun ProductEntry(
             )
             .clickable {
                 navController.navigate(
-                    "product_detail_screen/${dominantColor.toArgb()}/${entry.productTitle}"
+                    "product_detail_screen/${dominantColor.toArgb()}/${entry.id}"
                 )
             }
     ) {

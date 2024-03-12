@@ -1,6 +1,8 @@
 package com.example.p.repository
 
+import android.util.Log
 import com.example.p.data.remote.ProductApi
+import com.example.p.data.remote.responses.Product
 import com.example.p.data.remote.responses.ProductList
 import com.example.p.util.Resource
 import dagger.hilt.android.scopes.ActivityScoped
@@ -23,12 +25,13 @@ class ProductRepository
         return Resource.Success(response)
     }
 
-//    suspend fun getPokemonInfo(pokemonName: String): Resource<Pokemon> {
-//        val response = try {
-//            api.getPokemonInfo(pokemonName)
-//        } catch (e: Exception) {
-//            return Resource.Error(message = "${e.message}\nAn error occured.")
-//        }
-//        return Resource.Success(response)
-//    }
+    suspend fun getProductInfo(id: String): Resource<Product> {
+        val response = try {
+            Log.d("gggg", "id = $id")
+            api.getProductInfo(id)
+        } catch (e: Exception) {
+            return Resource.Error(message = "${e.message}\nAn error occured.")
+        }
+        return Resource.Success(response)
+    }
 }
