@@ -2,6 +2,7 @@ package com.example.p.productdetail
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -326,8 +327,7 @@ fun ProductBaseStats(
     productInfo: Product,
     animDelayPerItem: Int = 100
 ) {
-    val maxPriceStat = 1000
-        Column(
+    Column(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
@@ -335,8 +335,9 @@ fun ProductBaseStats(
             fontSize = 20.sp,
             color = MaterialTheme.colors.onSurface
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
+        val maxPriceStat = 1000
         val price = productInfo.price
         ProductStat(
             statName = "Price",
@@ -344,6 +345,39 @@ fun ProductBaseStats(
             statMaxValue = maxPriceStat,
             statColor = Color.Yellow,
             animDelay = 0 * animDelayPerItem
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        val maxDiscountStat = 50
+        val discount = productInfo.discountPercentage
+        ProductStat(
+            statName = "%",
+            statValue = discount.toInt(),
+            statMaxValue = maxDiscountStat,
+            statColor = Color.Magenta,
+            animDelay = 2 * animDelayPerItem
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        val maxRatingStat = 5
+        val rating = productInfo.rating
+        ProductStat(
+            statName = "Rating",
+            statValue = rating.toInt(),
+            statMaxValue = maxRatingStat,
+            statColor = Color.Green,
+            animDelay = 1 * animDelayPerItem
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        val maxStockStat = 100
+        val stock = productInfo.stock
+        ProductStat(
+            statName = "Stock",
+            statValue = stock,
+            statMaxValue = maxStockStat,
+            statColor = Color.Cyan,
+            animDelay = 3 * animDelayPerItem
         )
         Spacer(modifier = Modifier.height(8.dp))
     }
