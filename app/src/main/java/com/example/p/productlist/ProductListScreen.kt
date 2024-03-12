@@ -58,6 +58,7 @@ import coil.compose.SubcomposeAsyncImageContent
 import coil.request.ImageRequest
 import com.example.p.ui.theme.Roboto
 import com.example.p.ui.theme.RobotoCondensed
+
 //import com.google.accompanist.coil.CoilImage
 
 @Composable
@@ -106,7 +107,7 @@ fun SearchBar(
         mutableStateOf(hint != "")
     }
 
-    Box(modifier = Modifier) {
+    Box(modifier = Modifier.padding(8.dp)) {
         BasicTextField(
             value = text,
             onValueChange = {
@@ -131,7 +132,7 @@ fun SearchBar(
                 color = Color.LightGray,
                 modifier = Modifier
                     .padding(horizontal = 20.dp, vertical = 12.dp)
-                )
+            )
         }
     }
 }
@@ -148,13 +149,13 @@ fun ProductList(
     val isSearching by remember { viewModel.isSearching }
 
     LazyColumn(contentPadding = PaddingValues(16.dp)) {
-        val itemCount = if(productList.size % 2 == 0) {
+        val itemCount = if (productList.size % 2 == 0) {
             productList.size / 2
         } else {
             productList.size / 2 + 1
         }
         items(itemCount) {
-            if(it >= itemCount - 1 && !endReached  && !isLoading && !isSearching) {
+            if (it >= itemCount - 1 && !endReached && !isLoading && !isSearching) {
                 LaunchedEffect(key1 = true) {
                     viewModel.loadProductPaginated()
                 }
@@ -184,13 +185,14 @@ fun ProductEntry(
     navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: ProductListViewModel = hiltViewModel()
-    ) {
+) {
     val defaultDominantColor = MaterialTheme.colors.surface
     var dominantColor by remember {
         mutableStateOf(defaultDominantColor)
     }
     val configuration = LocalConfiguration.current
-    val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+    val isLandscape =
+        configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
 
     val aspectRatio = if (isLandscape) {
         1f
@@ -231,7 +233,7 @@ fun ProductEntry(
                     )
                 },
                 success = { success ->
-                    viewModel.calcDominantColor(success.result.drawable){
+                    viewModel.calcDominantColor(success.result.drawable) {
                         dominantColor = it
                     }
                     SubcomposeAsyncImageContent()
@@ -297,8 +299,8 @@ fun RetrySection(
     error: String,
     onRetry: () -> Unit
 ) {
-    Column {
-        Text(text = error, color = Color.Red, fontSize = 18.sp)
+    Column(modifier = Modifier.padding(8.dp)) {
+        Text(text = error, color = Color.Red, fontSize = 18.sp, textAlign = TextAlign.Center)
         Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = { onRetry() },
