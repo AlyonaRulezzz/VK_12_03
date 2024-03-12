@@ -1,24 +1,22 @@
 package com.example.p.data.remote
 
-import com.example.p.data.remote.responses.Pokemon
-import com.example.p.data.remote.responses.PokemonList
+import com.example.p.data.remote.responses.ProductList
 import retrofit2.http.GET
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ProductApi {
 
-    @GET("pokemon")
-    suspend fun getPokemonList(
+    @GET("products")
+    suspend fun getProductList(
         @Query("limit")
         limit: Int,
-        @Query("offset")
-        offset: Int
-    ): PokemonList
+        @Query("skip")
+        skip: Int
+    ): ProductList
 
-    @GET("pokemon/{name}")
-    suspend fun getPokemonInfo(
-        @Path("name")
-        name: String
-    ) : Pokemon
+//    @GET("pokemon/{name}")
+//    suspend fun getPokemonInfo(
+//        @Path("name")
+//        name: String
+//    ) : Product
 }

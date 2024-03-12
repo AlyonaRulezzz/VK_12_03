@@ -15,7 +15,6 @@ import com.example.p.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,70 +24,58 @@ class ProductListViewModel @Inject constructor(
 
     private var curPage = 0
 
-    var pokemonList = mutableStateOf<List<ProductListEntry>>(listOf())
+    var productList = mutableStateOf<List<ProductListEntry>>(listOf())
     var loadError = mutableStateOf("")
     var isLoading = mutableStateOf(false)
     var endReached = mutableStateOf(false)
 
-    private var cachedPokemonList = listOf<ProductListEntry>()
+    private var cachedProductList = listOf<ProductListEntry>()
     private var isSearchStarting = true
     var isSearching = mutableStateOf(false)
 
     init {
-        loadPokemonPaginated()
+        loadProductPaginated()
     }
 
-    fun searchPokemonList(query: String) {
+    fun searchProductList(query: String) {
         val listToSearch = if (isSearchStarting) {
-            pokemonList.value
+            productList.value
         } else {
-            cachedPokemonList
+            cachedProductList
         }
         viewModelScope.launch(Dispatchers.Default) {
             if (query.trim().isEmpty()) {
-                pokemonList.value = cachedPokemonList
+                productList.value = cachedProductList
                 isSearching.value = false
                 isSearchStarting = true
                 return@launch
             }
             val results = listToSearch.filter {
-                it.pokemonName.contains(query.trim(), ignoreCase = true) ||
-                        it.number.toString() == query.trim()
+                it.productTitle.contains(query.trim(), ignoreCase = true)
             }
             if (isSearchStarting) {
-                cachedPokemonList = pokemonList.value
+                cachedProductList = productList.value
                 isSearchStarting = false
             }
-            pokemonList.value = results
+            productList.value = results
             isSearching.value = true
         }
     }
 
-    fun loadPokemonPaginated() {
+    fun loadProductPaginated() {
         viewModelScope.launch {
             isLoading.value = true
-            val result = repository.getPokemonList(PAGE_SIZE, curPage * PAGE_SIZE)
-            when(result) {
+            when(val result = repository.getProductList(PAGE_SIZE, curPage * PAGE_SIZE)) {
                 is Resource.Success -> {
-                    endReached.value = curPage * PAGE_SIZE >= result.data!!.count
-                    val pokedexEntries = result.data.results.mapIndexed { index, entry ->
-                        val number = if (entry.url.endsWith("/")) {
-                            entry.url.dropLast(1).takeLastWhile { it.isDigit() }
-                        } else {
-                            entry.url.takeLastWhile { it.isDigit() }
-                        }
-                        val url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${number}.png"
-                        ProductListEntry(entry.name.replaceFirstChar {
-                            if (it.isLowerCase()) it.titlecase(
-                                Locale.ROOT
-                            ) else it.toString()
-                        }, url, number.toInt())
+                    endReached.value = curPage * PAGE_SIZE >= result.data!!.total
+                    val productEntries = result.data.products.mapIndexed { _, entry ->
+                        ProductListEntry(entry.title, entry.thumbnail, entry.description)
                     }
                     curPage++
 
                     loadError.value = ""
                     isLoading.value = false
-                    pokemonList.value += pokedexEntries
+                    productList.value += productEntries
                 }
                 is Resource.Error -> {
                     loadError.value = result.message!!

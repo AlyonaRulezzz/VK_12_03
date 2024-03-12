@@ -17,13 +17,13 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun providePokemonRepository(
+    fun provideProductRepository(
         api: ProductApi
     ) = ProductRepository(api)
 
     @Singleton
     @Provides
-    fun providePokeApi(): ProductApi = Retrofit.Builder()
+    fun provideProductApi(): ProductApi = Retrofit.Builder()
         .addConverterFactory(GsonConverterFactory.create())
         .baseUrl(BASE_URL)
         .build()

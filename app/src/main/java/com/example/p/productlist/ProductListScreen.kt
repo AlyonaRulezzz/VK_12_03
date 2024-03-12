@@ -37,6 +37,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -49,16 +50,18 @@ import com.example.p.data.models.ProductListEntry
 import androidx.hilt.navigation.compose.hiltViewModel
 
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 //import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import coil.request.ImageRequest
+import com.example.p.ui.theme.Roboto
 import com.example.p.ui.theme.RobotoCondensed
 //import com.google.accompanist.coil.CoilImage
 
 @Composable
-fun PokemonListScreen(
+fun ProductListScreen(
     navController: NavController,
     viewModel: ProductListViewModel = hiltViewModel()
 ) {
@@ -69,8 +72,8 @@ fun PokemonListScreen(
         Column {
             Spacer(modifier = Modifier.height(20.dp))
             Image(
-                painter = painterResource(id = R.drawable.ic_international_pok_mon_logo),
-                contentDescription = "Pokemon",
+                painter = painterResource(id = R.drawable.ic_stop_and_shop_logo),
+                contentDescription = "Product",
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(CenterHorizontally)
@@ -82,10 +85,10 @@ fun PokemonListScreen(
                     .padding(16.dp),
                 hint = "Search"
             ) {
-                viewModel.searchPokemonList(it)
+                viewModel.searchProductList(it)
             }
             Spacer(modifier = Modifier.height(16.dp))
-            PokemonList(navController = navController)
+            ProductList(navController = navController)
         }
     }
 }
@@ -134,30 +137,29 @@ fun SearchBar(
 }
 
 @Composable
-fun PokemonList(
+fun ProductList(
     navController: NavController,
     viewModel: ProductListViewModel = hiltViewModel()
-//    viewModel: ProductListViewModel = hiltNavGraphViewModel()
 ) {
-    val pokemonList by remember { viewModel.pokemonList }
+    val productList by remember { viewModel.productList }
     val endReached by remember { viewModel.endReached }
     val loadError by remember { viewModel.loadError }
     val isLoading by remember { viewModel.isLoading }
     val isSearching by remember { viewModel.isSearching }
 
     LazyColumn(contentPadding = PaddingValues(16.dp)) {
-        val itemCount = if(pokemonList.size % 2 == 0) {
-            pokemonList.size / 2
+        val itemCount = if(productList.size % 2 == 0) {
+            productList.size / 2
         } else {
-            pokemonList.size / 2 + 1
+            productList.size / 2 + 1
         }
         items(itemCount) {
             if(it >= itemCount - 1 && !endReached  && !isLoading && !isSearching) {
                 LaunchedEffect(key1 = true) {
-                    viewModel.loadPokemonPaginated()
+                    viewModel.loadProductPaginated()
                 }
             }
-            PokedexRow(rowIndex = it, entries = pokemonList, navController = navController)
+            ProductRow(rowIndex = it, entries = productList, navController = navController)
         }
     }
 
@@ -170,23 +172,30 @@ fun PokemonList(
         }
         if (loadError.isNotEmpty()) {
             RetrySection(error = loadError) {
-                viewModel.loadPokemonPaginated()
+                viewModel.loadProductPaginated()
             }
         }
     }
 }
 
 @Composable
-fun PokedexEntry(
+fun ProductEntry(
     entry: ProductListEntry,
     navController: NavController,
     modifier: Modifier = Modifier,
-//    viewModel: ProductListViewModel = hiltNavGraphViewModel()  // deprecated (replaced by hiltViewModel)
     viewModel: ProductListViewModel = hiltViewModel()
     ) {
     val defaultDominantColor = MaterialTheme.colors.surface
     var dominantColor by remember {
         mutableStateOf(defaultDominantColor)
+    }
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+
+    val aspectRatio = if (isLandscape) {
+        1f
+    } else {
+        0.7f
     }
 
     Box(
@@ -194,7 +203,7 @@ fun PokedexEntry(
         modifier = modifier
             .shadow(5.dp, RoundedCornerShape(10.dp))
             .clip(RoundedCornerShape(10.dp))
-            .aspectRatio(1f)
+            .aspectRatio(aspectRatio)
             .background(
                 Brush.verticalGradient(
                     listOf(
@@ -205,7 +214,7 @@ fun PokedexEntry(
             )
             .clickable {
                 navController.navigate(
-                    "pokemon_detail_screen/${dominantColor.toArgb()}/${entry.pokemonName}"
+                    "product_detail_screen/${dominantColor.toArgb()}/${entry.productTitle}"
                 )
             }
     ) {
@@ -215,7 +224,7 @@ fun PokedexEntry(
                     .data(entry.imageUrl)
                     .crossfade(true)
                     .build(),
-                contentDescription = entry.pokemonName,
+                contentDescription = entry.productTitle,
                 loading = {
                     CircularProgressIndicator(
                         color = MaterialTheme.colors.primary, modifier = Modifier.scale(0.5F)
@@ -231,33 +240,46 @@ fun PokedexEntry(
                     .size(120.dp)
                     .align(CenterHorizontally)
             )
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = entry.pokemonName,
+                text = entry.productTitle,
                 fontFamily = RobotoCondensed,
                 fontSize = 20.sp,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp)
+            )
+            Text(
+                text = entry.description,
+                fontFamily = Roboto,
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
 }
 
 @Composable
-fun PokedexRow(
+fun ProductRow(
     rowIndex: Int,
     entries: List<ProductListEntry>,
     navController: NavController
 ) {
     Column {
         Row {
-            PokedexEntry(
+            ProductEntry(
                 entry = entries[rowIndex * 2],
                 navController = navController,
                 modifier = Modifier.weight(1f)
             )
             Spacer(modifier = Modifier.width(16.dp))
             if (entries.size >= rowIndex * 2 + 2) {
-                PokedexEntry(
+                ProductEntry(
                     entry = entries[rowIndex * 2 + 1],
                     navController = navController,
                     modifier = Modifier.weight(1f)

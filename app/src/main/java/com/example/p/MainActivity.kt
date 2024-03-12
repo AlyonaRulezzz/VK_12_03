@@ -11,11 +11,11 @@ import androidx.navigation.compose.composable
 //import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.p.productlist.PokemonListScreen
+import com.example.p.productlist.ProductListScreen
 import com.example.p.ui.theme.PTheme
 import dagger.hilt.android.AndroidEntryPoint
 
-import com.example.p.productdetail.PokemonDetailScreen
+import com.example.p.productdetail.ProductDetailScreen
 import java.util.Locale
 
 @AndroidEntryPoint
@@ -25,17 +25,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             PTheme {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "pokemon_list_screen") {
-                    composable("pokemon_list_screen") {
-                        PokemonListScreen(navController = navController)
+                NavHost(navController = navController, startDestination = "product_list_screen") {
+                    composable("product_list_screen") {
+                        ProductListScreen(navController = navController)
                     }
                     composable(
-                        "pokemon_detail_screen/{dominantColor}/{pokemonName}",
+                        "product_detail_screen/{dominantColor}/{productName}",
                         arguments = listOf(
                             navArgument("dominantColor") {
                                 type = NavType.IntType
                             },
-                            navArgument("pokemonName") {
+                            navArgument("productName") {
                                 type = NavType.StringType
                             }
                         )
@@ -44,12 +44,12 @@ class MainActivity : ComponentActivity() {
                             val color = it.arguments?.getInt("dominantColor")
                             color?.let { Color(it) } ?: Color.White
                         }
-                        val pokemonName = remember {
-                            it.arguments?.getString("pokemonName")
+                        val productName = remember {
+                            it.arguments?.getString("productName")
                         }
-                        PokemonDetailScreen(
+                        ProductDetailScreen(
                             dominantColor = dominantColor,
-                            pokemonName = pokemonName?.lowercase(Locale.ROOT) ?: "",
+                            productName = productName?.lowercase(Locale.ROOT) ?: "",
                             navController = navController
                         )
                     }

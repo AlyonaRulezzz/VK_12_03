@@ -95,18 +95,12 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("com.google.accompanist:accompanist-coil:0.15.0")
 
-/////////////
     // When using Kotlin.
     kapt("androidx.hilt:hilt-compiler:1.2.0")
-    //  we need to DELETE this dependency if we use implementation("com.google.dagger:hilt-android:MORE THEN 2.35")
-//    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     implementation("com.google.dagger:hilt-android:2.49")
     kapt("com.google.dagger:hilt-android-compiler:2.49")
-//    implementation("com.google.dagger:hilt-android:2.33-beta")
-//    kapt("com.google.dagger:hilt-android-compiler:2.33-beta")
-////////////
 
     implementation("androidx.palette:palette-ktx:1.0.0")
 }
